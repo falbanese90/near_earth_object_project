@@ -385,12 +385,15 @@ def main():
     database = NEODatabase(load_neos(args.neofile), load_approaches(args.cadfile))
 
     # Run the chosen subcommand.
-    if args.cmd == 'inspect':
-        inspect(database, pdes=args.pdes, name=args.name, verbose=args.verbose)
-    elif args.cmd == 'query':
-        query(database, args)
-    elif args.cmd == 'interactive':
-        NEOShell(database, inspect_parser, query_parser, aggressive=args.aggressive).cmdloop()
+    try:
+        if args.cmd == 'inspect':
+            inspect(database, pdes=args.pdes, name=args.name, verbose=args.verbose)
+        elif args.cmd == 'query':
+            query(database, args)
+        elif args.cmd == 'interactive':
+            NEOShell(database, inspect_parser, query_parser, aggressive=args.aggressive).cmdloop()
+    except UnboundLocalError:
+        print("Supplied bad name or designation. Please check your inputs.")
 
 
 if __name__ == '__main__':

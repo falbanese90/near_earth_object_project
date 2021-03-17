@@ -1,0 +1,8 @@
+.ipynb_checkpoints/
+Task1.ipynb
+__pycache__/
+cad_dict.ipynb
+data/.ipynb_checkpoints/
+tests/.ipynb_checkpoints/
+tests/Untitled.ipynb
+tests/__pycache__/
