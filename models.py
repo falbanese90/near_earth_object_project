@@ -37,13 +37,10 @@ class NearEarthObject:
             return self.designation
 
     def __str__(self):
-        return f"A NearEarthObject, {self.fullname}, has a diameter of"
-        f"{round(self.diameter, 3)} km and {self.hazard_msg}."
+        return f"A NearEarthObject, {self.fullname}, has a diameter of {round(self.diameter, 3)} km and {self.hazard_msg}."
 
     def __repr__(self):
-        return (f"NearEarthObject(designation={self.designation!r},"
-                f"name={self.name!r}, "
-                f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})")
+        return (f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, diameter={self.diameter:.3f}, hazardous={self.hazardous!r})")
 
 
 class CloseApproach:
@@ -57,9 +54,7 @@ class CloseApproach:
 
     def __str__(self):
         """Return `str(self)`."""
-        return f"At {self.time_str}, {self.neo} approaches"
-        f"Earth at a distance of {round(self.distance, 2)} au and a velocity"
-        f"of {round(self.velocity, 2)} km/s."
+        return f"At {self.time_str}, {self.neo} approaches Earth at a distance of {round(self.distance, 2)} au and a velocity of {round(self.velocity, 2)} km/s."
 
     def __repr__(self):
         return (f"At CloseApproach(time={self.time_str!r},"

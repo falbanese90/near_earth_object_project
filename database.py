@@ -23,6 +23,11 @@ def memoize(function):
 neos = load_neos()
 approaches = load_approaches()
 
+query_list = []
+for item in approaches:
+    if float(item['dist']) >= .1 and float(item['dist']) <= .3:
+        query_list.append(item)
+        
 
 class NEODatabase:
     def __init__(self, neos=neos, approaches=approaches):
@@ -63,7 +68,8 @@ class NEODatabase:
         return neo
 
     def query(self, filters=()):
-        for item in self._approaches[::-1]:
+        approaches = sorted(query_list, key = (lambda i: i['dist']))
+        for item in approaches:
             cad_attr = {}
             cad_object = item
             cad_attr['time'] = helpers.cd_to_datetime(cad_object['cd'])
