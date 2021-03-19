@@ -1,18 +1,23 @@
-
+from models import CloseApproach, NearEarthObject
 import csv
 import json
+import pickle as pkl
 
-from models import NearEarthObject, CloseApproach
 
 
 def load_neos(neo_csv_path='data/neos.csv'):
-
-    neos = []
+    neos_csv = []
     with open(neo_csv_path) as f:
         reader = csv.DictReader(f)
         for elem in reader:
-            neos.append(elem)
+            neos_csv.append(elem)
+    neos = []
+    for neo in neos_csv:
+        n = NearEarthObject(neo)
+        neos.append(n)
     return neos
+        
+
 
 
 def load_approaches(cad_json_path='data/cad.json'):
@@ -22,7 +27,6 @@ def load_approaches(cad_json_path='data/cad.json'):
 # field names to each value.
     fields = cad['fields']
     cad_dicts = []
-
     for object in cad['data']:
         section = {}
         x = 0
@@ -30,5 +34,13 @@ def load_approaches(cad_json_path='data/cad.json'):
             section[label] = object[x]
             x += 1
         cad_dicts.append(section)
+    approaches = []
+    with open('neo_dicts.pkl', 'rb') as f:
+        neo_dicts = pkl.load(f)
+    for approach in cad_dicts:
+        a = CloseApproach(approach)
+        neo = neo_dicts.get(a._designation, None)
+        a.neo = neo
+        approaches.append(a)
+    return approaches
 
-    return cad_dicts

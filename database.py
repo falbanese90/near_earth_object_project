@@ -1,6 +1,5 @@
 from extract import load_neos, load_approaches
 from models import NearEarthObject, CloseApproach
-from class_builder import get_neo, get_neo_attr, get_cad_attr
 import helpers
 import functools
 
@@ -19,64 +18,47 @@ def memoize(function):
         return function._cache[key]
     return wrapper
 
-
 neos = load_neos()
 approaches = load_approaches()
 
-query_list = []
-for item in approaches:
-    if float(item['dist']) >= .1 and float(item['dist']) <= .3:
-        query_list.append(item)
-        
+
+# query_list = []
+# for item in approaches:
+#     if item.distance >= .08 and item.distance <= .33:
+#         query_list.append(item)
+
 
 class NEODatabase:
-    def __init__(self, neos=neos, approaches=approaches):
+    def __init__(self, neos, approaches):
         self._neos = neos
         self._approaches = approaches
+        
+        self.designation_neo_dict = {}
+        self.name_neo_dict = {}
+        
+        for neo in self._neos:
+            self.designation_neo_dict[neo.designation] = neo
+            if neo.name:
+                self.name_neo_dict[neo.name] = neo
+                
+        for approach in self._approaches:
+            neo = self.designation_neo_dict[approach._designation]
+            approach.neo = neo
+            neo.approaches.append(approach)
+
+
 
     @memoize
     def get_neo_by_designation(self, designation):
-        neo = models.NearEarthObject(pdes=designation)
-        for items in self._approaches:
-            if items['des'] == neo.designation:
-                cad_attr = {}
-                cad_object = items
-                cad_attr['time'] = helpers.cd_to_datetime(cad_object['cd'])
-                cad_attr['distance'] = float(cad_object['dist'])
-                cad_attr['velocity'] = float(cad_object['v_rel'])
-                cad_attr['_designation'] = cad_object['des']
-                approach = CloseApproach(cad_attr)
-                approach.neo = neo.fullname
-                neo.approaches.append(str(approach))
+        neo = self.designation_neo_dict.get(designation, None)
         return neo
 
     @memoize
     def get_neo_by_name(self, name):
-        neo = NearEarthObject(name=name)
-        for items in self._approaches:
-            if items['des'] == neo.designation:
-                cad_attr = {}
-                cad_object = items
-                cad_attr['time'] = helpers.cd_to_datetime(cad_object['cd'])
-                cad_attr['distance'] = float(cad_object['dist'])
-                cad_attr['velocity'] = float(cad_object['v_rel'])
-                cad_attr['_designation'] = cad_object['des']
-                approach = CloseApproach(cad_attr)
-                approach.neo = neo.fullname
-                neo.approaches.append(str(approach))
-
+        neo = self.name_neo_dict.get(name, None)
         return neo
 
     def query(self, filters=()):
-        approaches = sorted(query_list, key = (lambda i: i['dist']))
-        for item in approaches:
-            cad_attr = {}
-            cad_object = item
-            cad_attr['time'] = helpers.cd_to_datetime(cad_object['cd'])
-            cad_attr['distance'] = float(cad_object['dist'])
-            cad_attr['velocity'] = float(cad_object['v_rel'])
-            cad_attr['_designation'] = cad_object['des']
-            approach = CloseApproach(cad_attr)
-            approach.neo = NearEarthObject(pdes=approach._designation)
+        for approach in self._approaches:
             if all(map((lambda x: x.__call__(approach)), filters)):
                 yield approach

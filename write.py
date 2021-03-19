@@ -11,31 +11,29 @@ def write_to_csv(results, filename):
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         for approach in results:
-            neo = NearEarthObject(pdes=approach._designation)
             line = {}
             line['datetime_utc'] = helpers.datetime_to_str(approach.time)
             line['distance_au'] = approach.distance
             line['velocity_km_s'] = approach.velocity
             line['designation'] = approach._designation
-            line['name'] = neo.fullname
-            line['diameter_km'] = neo.diameter
-            line['potentially_hazardous'] = neo.hazardous
+            line['name'] = approach.neo.fullname
+            line['diameter_km'] = approach.neo.diameter
+            line['potentially_hazardous'] = approach.neo.hazardous
             writer.writerow(line)
 
 
 def write_to_json(results, filename):
-    approaches = list()
+    output = []
     for approach in results:
-            neo = NearEarthObject(pdes=approach._designation)
-            line = {}
-            line['datetime_utc'] = helpers.datetime_to_str(approach.time)
-            line['distance_au'] = approach.distance
-            line['velocity_km_s'] = approach.velocity
-            line['designation'] = approach._designation
-            line['name'] = neo.fullname
-            line['diameter_km'] = neo.diameter
-            line['potentially_hazardous'] = neo.hazardous
-            approaches.append(line)
-
-    with open(filename, 'w') as f:
-        writer = json.dump(approaches, f, indent=2)
+        item = {'datetime_utc': approach.time_str,
+                'distance_au': approach.distance,
+                'velocity_km_s': approach.velocity,
+                'neo': {'designation': approach._designation,
+                       'name': approach.neo.name,
+                       'diameter_km': approach.neo.diameter,
+                       'potentially_hazardous': approach.neo.hazardous
+                        }
+               }
+        output.append(item)
+    with open(filename, 'w') as outfile:
+        json.dump(output, outfile)

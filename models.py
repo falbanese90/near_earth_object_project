@@ -1,5 +1,4 @@
 from helpers import cd_to_datetime, datetime_to_str
-from class_builder import get_neo, get_neo_attr, get_cad_attr, cad
 import pickle as pkl
 import functools
 
@@ -10,16 +9,23 @@ class BuildError(UnboundLocalError):
 
 
 class NearEarthObject:
-    def __init__(self, name=None, pdes=None):
-        if name:
-            carrier = get_neo_attr(get_neo(name=name))
-        if pdes:
-            carrier = get_neo_attr(get_neo(pdes=pdes))
-        if not name and not pdes:
-            raise BuildError('Please supply pdes or name.')
-        # Here we use the dictionary of neo to update all of self atributes.
-        self.__dict__.update(carrier)
-        # Create an empty initial collection of linked approaches.
+    def __init__(self, info):
+        
+        for key, value in info.items():
+            if key == 'name':
+                self.name = value if value else None
+            elif key == 'diameter':
+                if value:
+                    self.diameter = float(value) 
+                else:
+                    self.diameter = float('nan')
+            elif key == 'pha':
+                self.hazardous = True if value == 'Y' else False
+            elif key == 'pdes':
+                self.designation = value
+            else:
+                pass
+        
         self.approaches = []
 
     @property
@@ -44,8 +50,19 @@ class NearEarthObject:
 
 
 class CloseApproach:
-    def __init__(self, attr):
-        self.__dict__.update(attr)
+    def __init__(self, info):
+        for key, value in info.items():
+            if key == 'cd':
+                self.time = cd_to_datetime(value)
+            elif key == 'dist':
+                self.distance = float(value)
+            elif key == 'v_rel':
+                self.velocity = float(value)
+            elif key == 'des':
+                self._designation = value
+            else:
+                pass
+
         self.neo = None
 
     @property
@@ -53,8 +70,7 @@ class CloseApproach:
         return datetime_to_str(self.time)
 
     def __str__(self):
-        """Return `str(self)`."""
-        return f"At {self.time_str}, {self.neo} approaches Earth at a distance of {round(self.distance, 2)} au and a velocity of {round(self.velocity, 2)} km/s."
+        return f"At {self.time_str}, {self.neo.fullname} approaches Earth at a distance of {round(self.distance, 2)} au and a velocity of {round(self.velocity, 2)} km/s."
 
     def __repr__(self):
         return (f"At CloseApproach(time={self.time_str!r},"
