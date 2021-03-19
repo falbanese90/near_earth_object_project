@@ -18,35 +18,28 @@ def memoize(function):
         return function._cache[key]
     return wrapper
 
+
 neos = load_neos()
 approaches = load_approaches()
-
-
-# query_list = []
-# for item in approaches:
-#     if item.distance >= .08 and item.distance <= .33:
-#         query_list.append(item)
 
 
 class NEODatabase:
     def __init__(self, neos, approaches):
         self._neos = neos
         self._approaches = approaches
-        
+
         self.designation_neo_dict = {}
         self.name_neo_dict = {}
-        
+
         for neo in self._neos:
             self.designation_neo_dict[neo.designation] = neo
             if neo.name:
                 self.name_neo_dict[neo.name] = neo
-                
+
         for approach in self._approaches:
             neo = self.designation_neo_dict[approach._designation]
             approach.neo = neo
             neo.approaches.append(approach)
-
-
 
     @memoize
     def get_neo_by_designation(self, designation):

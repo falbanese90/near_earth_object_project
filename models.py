@@ -10,13 +10,13 @@ class BuildError(UnboundLocalError):
 
 class NearEarthObject:
     def __init__(self, info):
-        
+
         for key, value in info.items():
             if key == 'name':
                 self.name = value if value else None
             elif key == 'diameter':
                 if value:
-                    self.diameter = float(value) 
+                    self.diameter = float(value)
                 else:
                     self.diameter = float('nan')
             elif key == 'pha':
@@ -25,7 +25,7 @@ class NearEarthObject:
                 self.designation = value
             else:
                 pass
-        
+
         self.approaches = []
 
     @property

@@ -4,7 +4,6 @@ import json
 import pickle as pkl
 
 
-
 def load_neos(neo_csv_path='data/neos.csv'):
     neos_csv = []
     with open(neo_csv_path) as f:
@@ -16,8 +15,6 @@ def load_neos(neo_csv_path='data/neos.csv'):
         n = NearEarthObject(neo)
         neos.append(n)
     return neos
-        
-
 
 
 def load_approaches(cad_json_path='data/cad.json'):
@@ -43,4 +40,3 @@ def load_approaches(cad_json_path='data/cad.json'):
         a.neo = neo
         approaches.append(a)
     return approaches
-
