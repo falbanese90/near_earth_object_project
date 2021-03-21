@@ -1,12 +1,12 @@
+"""Database of Near Earth Objects and their Approaches."""
 from extract import load_neos, load_approaches
 from models import NearEarthObject, CloseApproach
 import helpers
 import functools
 
 
-# Creates a cache file to expedite searches
-# and queries by storing results in dict.
 def memoize(function):
+    """Create cache file for expedited retrieval in interactive mode."""
     function._cache = {}
 
     @functools.wraps(function)
@@ -24,7 +24,13 @@ approaches = load_approaches()
 
 
 class NEODatabase:
+    """Sets up Database of Near Earth Object classes.
+
+    Connects them with their close approach classes.
+    """
+
     def __init__(self, neos, approaches):
+        """Define neo based on specified attributes."""
         self._neos = neos
         self._approaches = approaches
 
@@ -43,15 +49,18 @@ class NEODatabase:
 
     @memoize
     def get_neo_by_designation(self, designation):
+        """Retrieve Near Earth Object by specified designation."""
         neo = self.designation_neo_dict.get(designation, None)
         return neo
 
     @memoize
     def get_neo_by_name(self, name):
+        """Retrieve Near Earth Object by specified name."""
         neo = self.name_neo_dict.get(name, None)
         return neo
 
     def query(self, filters=()):
+        """Use filters to query data based on user specifications."""
         for approach in self._approaches:
             if all(map((lambda x: x.__call__(approach)), filters)):
                 yield approach

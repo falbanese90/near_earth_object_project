@@ -1,3 +1,4 @@
+"""Extract Data and creates object classes."""
 from models import CloseApproach, NearEarthObject
 import csv
 import json
@@ -5,6 +6,7 @@ import pickle as pkl
 
 
 def load_neos(neo_csv_path='data/neos.csv'):
+    """Load neos and unpack them in order to build objects."""
     neos_csv = []
     with open(neo_csv_path) as f:
         reader = csv.DictReader(f)
@@ -18,10 +20,11 @@ def load_neos(neo_csv_path='data/neos.csv'):
 
 
 def load_approaches(cad_json_path='data/cad.json'):
+    """Load cloase approaches and unpack them in order to build objects."""
     with open(cad_json_path) as f:
         cad = json.load(f)
-# I further organized this json object by creating a dictionary to map
-# field names to each value.
+    # I further organized this json object by creating a dictionary to map
+    # field names to each value.
     fields = cad['fields']
     cad_dicts = []
     for object in cad['data']:

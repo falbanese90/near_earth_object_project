@@ -1,4 +1,4 @@
-
+"""Create filter classes to parse and organize data."""
 import operator
 
 
@@ -7,49 +7,71 @@ class UnsupportedCriterionError(NotImplementedError):
 
 
 class AttributeFilter:
+    """Creates class of attributes and uses them to filter database."""
+
     def __init__(self, op, value):
+        """Filter attributes."""
         self.op = op
         self.value = value
 
     def __call__(self, approach):
+        """Call the operator to compare values and filter."""
         return self.op(self.get(approach), self.value)
 
     @classmethod
     def get(cls, approach):
+        """Retrieve specific value."""
         raise UnsupportedCriterionError
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(op=operator.{self.op.__name__}"
-        f", value={self.value})"
+        """Machine readable format."""
+        return (f"{self.__class__.__name__}"
+                f"(op=operator.{self.op.__name__}"
+                f", value={self.value})")
 
 
 class DateFilter(AttributeFilter):
+    """Date Attribute filter."""
+
     @classmethod
     def get(cls, approach):
+        """Retrieve specific value."""
         return approach.time.date()
 
 
 class DistanceFilter(AttributeFilter):
+    """Distance attribute filter."""
+
     @classmethod
     def get(cls, approach):
+        """Retrieve specific value."""
         return approach.distance
 
 
 class VelocityFilter(AttributeFilter):
+    """Velocity attribute filter."""
+
     @classmethod
     def get(cls, approach):
+        """Retrieve specific value."""
         return approach.velocity
 
 
 class DiameterFilter(AttributeFilter):
+    """Diameter filter."""
+
     @classmethod
     def get(cls, approach):
+        """Retrieve specific value."""
         return approach.neo.diameter
 
 
 class HazardousFilter(AttributeFilter):
+    """Hazardous filter."""
+
     @classmethod
     def get(cls, approach):
+        """Retrieve specific value."""
         return approach.neo.hazardous
 
 
@@ -58,7 +80,7 @@ def create_filters(date=None, start_date=None, end_date=None,
                    velocity_min=None, velocity_max=None,
                    diameter_min=None, diameter_max=None,
                    hazardous=None):
-
+    """Create filters based on user input."""
     filters = list()
 
     if date is not None:
@@ -86,6 +108,7 @@ def create_filters(date=None, start_date=None, end_date=None,
 
 
 def limit(iterator, n=None):
+    """Create a user specified limit."""
     for i, v in enumerate(iterator):
         yield v
         if i + 1 == n:
