@@ -1,4 +1,4 @@
-
+"""Write Results to Json or CSV."""
 import csv
 import json
 from models import NearEarthObject
@@ -6,7 +6,14 @@ import helpers
 
 
 def write_to_csv(results, filename):
-    fieldnames = ('datetime_utc', 'distance_au', 'velocity_km_s', 'designation', 'name', 'diameter_km', 'potentially_hazardous')
+    """Write results to CSV."""
+    fieldnames = ('datetime_utc',
+                  'distance_au',
+                  'velocity_km_s',
+                  'designation',
+                  'name',
+                  'diameter_km',
+                  'potentially_hazardous')
     with open(filename, 'w') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -23,17 +30,18 @@ def write_to_csv(results, filename):
 
 
 def write_to_json(results, filename):
+    """Write Results to Json."""
     output = []
     for approach in results:
         item = {'datetime_utc': approach.time_str,
                 'distance_au': approach.distance,
                 'velocity_km_s': approach.velocity,
                 'neo': {'designation': approach._designation,
-                       'name': approach.neo.name,
-                       'diameter_km': approach.neo.diameter,
-                       'potentially_hazardous': approach.neo.hazardous
+                        'name': approach.neo.name,
+                        'diameter_km': approach.neo.diameter,
+                        'potentially_hazardous': approach.neo.hazardous
                         }
-               }
+                }
         output.append(item)
     with open(filename, 'w') as outfile:
         json.dump(output, outfile)
